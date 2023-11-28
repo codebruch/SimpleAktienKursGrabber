@@ -9,5 +9,5 @@ docker tag $PIMAGE  registry.registry.lan/grabber:release
 docker push  registry.registry.lan/grabber:release
 
 
- 
+  kubectl apply -f Deployment.yaml
  
