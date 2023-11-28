@@ -1,0 +1,56 @@
+# define base image as python slim-buster.
+FROM python:3.11-slim-bullseye as base
+
+## start builder stage.
+
+# this is the first stage of the build.
+# it will install all requirements.
+FROM base as builder
+
+# install all packages for chromedriver: https://gist.github.com/varyonic/dea40abcf3dd891d204ef235c6e8dd79
+RUN apt-get update && \
+    apt-get install -y xvfb gnupg wget curl unzip --no-install-recommends 
+
+
+RUN CHROME_VERSION="114.0.5735.90-1" && \
+  wget --no-verbose -O /tmp/chrome.deb https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb \
+  && apt install -y /tmp/chrome.deb \
+  && rm /tmp/chrome.deb
+
+
+#RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+#    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
+#    apt-get update -y && \
+#    apt-get install -y google-chrome-stable 
+
+RUN  CHROMEDRIVER=$(google-chrome --product-version | grep -o "[^\.]*\.[^\.]*\.[^\.]*") && \
+     echo $CHROMEDIRVER && \
+     DRIVERVER=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMEDRIVER") && \
+     wget -q --continue -P /chromedriver "http://chromedriver.storage.googleapis.com/$DRIVERVER/chromedriver_linux64.zip" && \
+     unzip /chromedriver/chromedriver* -d /chromedriver
+
+# make the chromedriver executable and move it to default selenium path.
+RUN chmod +x /chromedriver/chromedriver
+RUN mv /chromedriver/chromedriver /usr/bin/chromedriver
+
+# copy any python requirements file into the install directory and install all python requirements.
+COPY requirements.txt /requirements.txt
+RUN pip install --upgrade --no-cache-dir -r /requirements.txt
+RUN rm /requirements.txt # remove requirements file from container.
+
+# copy the source code into /app and move into that directory.
+COPY app /app
+
+## end builder stage.
+
+#####
+
+## start base stage.
+
+# this is the image this is run.
+FROM builder
+
+
+# default entry point.
+CMD ["python", "app/webscraper.py", "-c"]
+## end base stage.
