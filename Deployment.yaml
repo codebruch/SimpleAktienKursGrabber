@@ -18,3 +18,22 @@ spec:
       containers:
         - name: grabber
           image: registry.registry.lan/grabber:release
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8765
+# ---
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: grabber-ownip
+#   namespace: default
+#   annotations:
+#     metallb.universe.tf/loadBalancerIPs: 192.168.1.87
+# spec:
+#   type: LoadBalancer
+#   ports:
+#     - protocol: TCP
+#       port: 8765
+
+#   selector:
+#     app: grabber

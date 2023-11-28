@@ -9,7 +9,7 @@ FROM base as builder
 
 # install all packages for chromedriver: https://gist.github.com/varyonic/dea40abcf3dd891d204ef235c6e8dd79
 RUN apt-get update && \
-    apt-get install -y xvfb gnupg wget curl unzip --no-install-recommends 
+    apt-get install -y xvfb gnupg wget curl unzip procps --no-install-recommends 
 
 
 RUN CHROME_VERSION="114.0.5735.90-1" && \
@@ -40,6 +40,7 @@ RUN rm /requirements.txt # remove requirements file from container.
 
 # copy the source code into /app and move into that directory.
 COPY app /app
+COPY start.sh /start.sh
 
 ## end builder stage.
 
@@ -52,5 +53,5 @@ FROM builder
 
 
 # default entry point.
-CMD ["python", "app/webscraper.py", "-c"]
+CMD ["./start.sh"]
 ## end base stage.
