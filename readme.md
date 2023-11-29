@@ -1,3 +1,7 @@
+## A small web scraper to get DAX and SP 500 quotes
+Get thStock quotes for further consumption by using selenium  
+
+## Deploy stuff
 [alex@nuc2 app]$  source ./bin/activate
 
 (app) [alex@nuc2 app]$  python3 -m pip install selenium
