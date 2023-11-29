@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: grabber-cron
+  namespace: default
+spec:
+  schedule: "*/30 * * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: grabber-job
+        spec:
+          containers:
+            - name: grabber
+              image: registry.registry.lan/grabber:release
+              imagePullPolicy: Always
+              ports:
+              - containerPort: 8765
+          restartPolicy: OnFailure
