@@ -22,7 +22,25 @@ import time
 import sys
 from websockets.sync.client import connect
 from selenium.common import exceptions  
-from datetime import datetime
+import datetime
+
+
+def storeEOD(r,quote,symbol):
+    # Aktuelles Datum als Schlüssel
+    heutiges_datum = datetime.date.today().isoformat()
+    
+    # Schlüssel für Redis erstellen
+    redis_schluessel = f'eod:{heutiges_datum}:{symbol}'
+    
+    # Prüfen, ob der Schlüssel bereits vorhanden ist
+    if not r.exists(redis_schluessel):
+        # Neuen Schlüssel erstellen, wenn er nicht existiert
+        redis_schluessel = f'eod:{heutiges_datum}:{symbol}'
+    
+    # Messwert in Redis speichern
+    r.set(redis_schluessel, f'{quote}:{time.time()}')
+              
+    print(f'Messwert {quote} für {heutiges_datum} in Redis gespeichert.')
 
 class webscraper():
 
@@ -83,6 +101,7 @@ class webscraper():
             logging.debug("lastupdatetime: "+ str(lastupdatetime))
             SP500 = symbolname+":"+str(element)+":"+str(lastupdatetime)
             r.publish(symbolname, str(SP500))
+            storeEOD(r,str(element),symbolname)
             
             time.sleep(0.6)
 
