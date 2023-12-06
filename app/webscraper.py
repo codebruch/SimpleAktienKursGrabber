@@ -118,15 +118,17 @@ if __name__ == "__main__":
 
     #thread = threading.Thread(target = webscraper.grabDAXproducer)
     thread = threading.Thread(target = webscraper.grabGenericProducer, args=('https://www.ls-tc.de/de/', '//*[@id="chart3push"]/span[2]/span','DAX'))
-    thread2 = threading.Thread(target = webscraper.grabGenericProducer, args=('https://www.boerse.de/realtime-kurse/SundP-500-Aktien/US78378X1072','//*[@id="content_container"]/div/div/div[1]/div/div[1]/div/div[1]/div[1]/div/div[2]/div[1]/span/span[1]','SP500'))
+    #thread500 = threading.Thread(target = webscraper.grabGenericProducer, args=('https://www.boerse.de/realtime-kurse/SundP-500-Aktien/US78378X1072','//*[@id="content_container"]/div/div/div[1]/div/div[1]/div/div[1]/div[1]/div/div[2]/div[1]/span/span[1]','SP500'))
+    thread500 = threading.Thread(target = webscraper.grabGenericProducer, args=('https://www.boerse-frankfurt.de/index/s-p-500','/html/body/app-root/app-wrapper/div/div[2]/app-index/div[2]/div[2]/div[2]/app-widget-price-box/div/div/table/tbody/tr[1]/td[2]','SP500'))
+   
     #threadBTCUSD = threading.Thread(target = webscraper.grabGenericProducer, args=('https://www.coinbase.com/price/bitcoin','//*[@id="PriceSection"]/div[1]/div/div[1]/div[1]/div/div[1]/div[2]/div/span','BTCUSD'))
     threadBTCUSD = threading.Thread(target = webscraper.grabGenericProducer, args=('https://bitcointicker.co/coinbase/btc/usd/1hr/','//*[@id="lastTrade"]','BTCUSD'))
     threadBTCUSD.start()
     logging.debug("threadBTCUSD start: " + str(threadBTCUSD))
     thread.start()
     logging.debug("thread1 start: " + str(thread))
-    thread2.start()
-    logging.debug("thread2 start: " + str(thread2))
+    thread500.start()
+    logging.debug("thread2 start: " + str(thread500))
     thread.join()
     logging.debug("thread finished...exiting")
 
