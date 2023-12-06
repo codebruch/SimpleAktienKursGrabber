@@ -44,7 +44,7 @@ def storeEOD(r,quote,symbol):
 
 class webscraper():
 
-    def grabGenericProducer(url,xpath_string,symbolname):
+    def grabGenericProducer(url,xpath_string,symbolname,clickaction=None,clickaction2=None):
         r = redis.Redis(host='redis.lan', port=6379, decode_responses=True)
 
         # set xvfb display since there is no GUI in docker container.
@@ -65,6 +65,26 @@ class webscraper():
 
         #with connect("ws://localhost:8765") as websocket:
         #    logging.debug('opened websocket connection')
+
+        if clickaction != None:
+            # Find the element by XPath
+            xpath_of_element = clickaction
+            element = driver.find_element(By.XPATH,xpath_of_element)
+
+            # Click on the element
+            element.click()
+        
+        WebDriverWait(driver, 2)  
+
+        if clickaction2 != None:
+            # Find the element by XPath
+            xpath_of_element = clickaction2
+            element = driver.find_element(By.XPATH,xpath_of_element)
+
+            # Click on the element
+            element.click()
+        
+        WebDriverWait(driver, 2)     
 
         while True:
             #xpath_string = '//*[@id="content_container"]/div/div/div[1]/div/div[1]/div/div[1]/div[1]/div/div[2]/div[1]/span/span[1]'
@@ -117,18 +137,18 @@ if __name__ == "__main__":
  
 
     #thread = threading.Thread(target = webscraper.grabDAXproducer)
-    thread = threading.Thread(target = webscraper.grabGenericProducer, args=('https://www.ls-tc.de/de/', '//*[@id="chart3push"]/span[2]/span','DAX'))
+    thread = threading.Thread(target = webscraper.grabGenericProducer, args=('https://www.ls-tc.de/de/', '//*[@id="chart3push"]/span[2]/span','DAX',None,None))
     #thread500 = threading.Thread(target = webscraper.grabGenericProducer, args=('https://www.boerse.de/realtime-kurse/SundP-500-Aktien/US78378X1072','//*[@id="content_container"]/div/div/div[1]/div/div[1]/div/div[1]/div[1]/div/div[2]/div[1]/span/span[1]','SP500'))
-    thread500 = threading.Thread(target = webscraper.grabGenericProducer, args=('https://www.boerse-frankfurt.de/index/s-p-500','/html/body/app-root/app-wrapper/div/div[2]/app-index/div[2]/div[2]/div[2]/app-widget-price-box/div/div/table/tbody/tr[1]/td[2]','SP500'))
+    thread500 = threading.Thread(target = webscraper.grabGenericProducer, args=('https://www.sg-zertifikate.de/underlying-detail?underlyingId=693','/html/body/app-root/div/app-main/underlying-detail/div/div[2]/div[2]/div[1]/div/div[2]/h5/lightstreamer-ticker-indication/span[1]','SP500','//*[@id="mat-checkbox-1"]/label/div' , '//*[@id="mat-dialog-0"]/cookies-one-layer/div/div/button[2]'))
    
     #threadBTCUSD = threading.Thread(target = webscraper.grabGenericProducer, args=('https://www.coinbase.com/price/bitcoin','//*[@id="PriceSection"]/div[1]/div/div[1]/div[1]/div/div[1]/div[2]/div/span','BTCUSD'))
-    threadBTCUSD = threading.Thread(target = webscraper.grabGenericProducer, args=('https://bitcointicker.co/coinbase/btc/usd/1hr/','//*[@id="lastTrade"]','BTCUSD'))
+    threadBTCUSD = threading.Thread(target = webscraper.grabGenericProducer, args=('https://bitcointicker.co/coinbase/btc/usd/1hr/','//*[@id="lastTrade"]','BTCUSD',None,None))
     threadBTCUSD.start()
     logging.debug("threadBTCUSD start: " + str(threadBTCUSD))
     thread.start()
     logging.debug("thread1 start: " + str(thread))
     thread500.start()
     logging.debug("thread2 start: " + str(thread500))
-    thread.join()
+    thread500.join()
     logging.debug("thread finished...exiting")
 
