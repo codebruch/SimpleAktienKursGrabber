@@ -2,7 +2,7 @@
 
 # Start the first process
 
-python /app/wsserver.py &
+python /app/screehsotServer.py &
 
 # Start the second process
 python /app/webscraper.py &
